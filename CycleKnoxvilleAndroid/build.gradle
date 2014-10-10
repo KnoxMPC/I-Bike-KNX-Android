@@ -1,0 +1,43 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.12+'
+    }
+}
+
+apply plugin: 'android'
+
+repositories {
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.1.0'
+    defaultConfig {
+        minSdkVersion 10
+        targetSdkVersion 19
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:20.0.0+'
+    compile 'com.google.android.gms:play-services:5.0.+'
+    compile files('libs/firebase-client-jvm.jar')
+    compile files('libs/firebase-simple-login.jar')
+}
+
+android {
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
