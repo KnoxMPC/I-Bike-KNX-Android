@@ -1,3 +1,12 @@
+I Bike KNX, 2014 University of Tennessee Knoxville
+-----------
+
+ Contact: Dr. Chris Cherry <cherry@utk.edu>
+          Phil Goldfarb <pgoldfar@utk.edu>
+
+Re-branded for Knoxville transit.
+
+
 Cycle Philly, 2013 Code for Philly
 -----------
 Philadelphia, PA. USA
