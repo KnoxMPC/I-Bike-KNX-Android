@@ -246,7 +246,7 @@ public class RecordingService extends Service implements LocationListener {
 	// END LocationListener implementation:
 
 	public void remindUser() {
-	    soundpool.play(bikebell, 1.0f, 1.0f, 1, 0, 1.0f);
+	    /* soundpool.play(bikebell, 1.0f, 1.0f, 1, 0, 1.0f); */
 
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		int icon = R.drawable.icon25;
