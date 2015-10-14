@@ -156,6 +156,7 @@ public class FragmentMainInput extends Fragment implements ConnectionCallbacks,
 					// findViewById(R.id.ListSavedTrips);
 					// populateList(listSavedTrips);
 				}
+				if(isAdded())
 				getActivity().unbindService(this); // race? this says
 													// we no longer care
 			}

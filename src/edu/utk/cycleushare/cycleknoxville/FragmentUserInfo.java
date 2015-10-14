@@ -35,6 +35,7 @@ public class FragmentUserInfo extends Fragment {
 	public final static int PREF_INCOME = 9;
 	public final static int PREF_RIDERTYPE = 10;
 	public final static int PREF_RIDERHISTORY = 11;
+	//public final static int PREF_UPLOAD_URL = 12;
 
 	private static final String TAG = "UserPrefActivity";
 
@@ -96,7 +97,7 @@ public class FragmentUserInfo extends Fragment {
 				// Toast.makeText(getActivity(), "Get Started Clicked",
 				// Toast.LENGTH_LONG).show();
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
-						.parse("http://www.ibikeknx.com/"));
+						.parse("http://www.ibikeknx.com/CycleKnox"));
 				startActivity(browserIntent);
 			}
 		});
@@ -156,6 +157,12 @@ public class FragmentUserInfo extends Fragment {
 				((Spinner) rootView.findViewById(R.id.genderSpinner))
 						.setSelection(((Integer) p.getValue()).intValue());
 				break;
+
+			/*case PREF_UPLOAD_URL:
+				((EditText) rootView.findViewById(R.id.textUploadURL))
+						.setText(((CharSequence) p.getValue()));
+				break;
+			*/
 			// int x = ((Integer) p.getValue()).intValue();
 			// if (x == 2) {
 			// ((RadioButton) findViewById(R.id.ButtonMale)).setChecked(true);
@@ -222,6 +229,11 @@ public class FragmentUserInfo extends Fragment {
 		editor.putInt("" + PREF_GENDER,
 				((Spinner) getActivity().findViewById(R.id.genderSpinner))
 						.getSelectedItemPosition());
+
+		/*editor.putString("" + PREF_UPLOAD_URL, ((EditText) getActivity()
+				.findViewById(R.id.textUploadURL)).getText().toString());
+		*/
+
 		// RadioGroup rbg = (RadioGroup) findViewById(R.id.RadioGroup01);
 		// if (rbg.getCheckedRadioButtonId() == R.id.ButtonMale) {
 		// editor.putInt("" + PREF_GENDER, 2);
@@ -270,7 +282,8 @@ public class FragmentUserInfo extends Fragment {
 		// .getProgress() / 100);
 
 		// Don't forget to commit your edits!!!
-		editor.commit();
+		//editor.commit();
+		editor.apply();
 		Toast.makeText(getActivity(), "User information saved.",
 				Toast.LENGTH_SHORT).show();
 		// Toast.makeText(getActivity(), ""+((Spinner)

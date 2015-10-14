@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.utk.cycleushare.cycleknoxville"
-    android:versionCode="10"
-    android:versionName="2.1" >
+    android:versionCode="15"
+    android:versionName="2.4" >
 
     <uses-sdk
         android:minSdkVersion="13"
@@ -37,26 +37,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
+        <!--<activity
             android:name="edu.utk.cycleushare.cycleknoxville.MainInputActivity"
             android:label="@string/title_activity_main_input" >
-        </activity>
+        </activity>-->
         <activity
             android:name="edu.utk.cycleushare.cycleknoxville.TripPurposeActivity"
             android:label="@string/title_activity_trip_purpose" >
         </activity>
+        <!--
         <activity
             android:name="edu.utk.cycleushare.cycleknoxville.UserInfoActivity"
             android:label="@string/title_activity_user_info" >
         </activity>
+        -->
         <activity
             android:name="edu.utk.cycleushare.cycleknoxville.TripMapActivity"
             android:label="@string/title_activity_trip_map" >
         </activity>
+        <!--
         <activity
             android:name="edu.utk.cycleushare.cycleknoxville.SavedTripsActivity"
             android:label="@string/title_activity_saved_trips" >
         </activity>
+        -->
         <activity
             android:name="edu.utk.cycleushare.cycleknoxville.TripDetailActivity"
             android:label="@string/title_activity_trip_detail" >
@@ -73,10 +77,13 @@
             android:name="edu.utk.cycleushare.cycleknoxville.NoteMapActivity"
             android:label="@string/title_activity_note_map" >
         </activity>
+
+        <!--
         <activity
             android:name="edu.utk.cycleushare.cycleknoxville.SavedNotesActivity"
             android:label="@string/title_activity_saved_notes" >
         </activity>
+        -->
 
         <service
             android:name="edu.utk.cycleushare.cycleknoxville.RecordingService"
@@ -84,10 +91,12 @@
             android:exported="true" >
         </service>
 
+        <!--
         <activity
             android:name="edu.utk.cycleushare.cycleknoxville.MainActivity"
             android:label="@string/title_activity_main" >
         </activity>
+        -->
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

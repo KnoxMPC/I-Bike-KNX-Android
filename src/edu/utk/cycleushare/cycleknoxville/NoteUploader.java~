@@ -239,7 +239,7 @@ public class NoteUploader extends AsyncTask<Long, Integer, Boolean> {
 
 		// get URL from settings; if it's not found (default), then use the preset
 		//if((postUrl = settings.getString(""+FragmentUserInfo.PREF_UPLOAD_URL,"")).equals("")){
-			postUrl = mCtx.getString(R.string.postURL);
+			postUrl = "http://cycleknox.ibikeknx.com/submit_trip.php";
 		//}
 
 		// byte[] postBodyDataZipped;

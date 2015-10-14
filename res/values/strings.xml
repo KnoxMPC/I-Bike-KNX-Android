@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">I BIKE KNX 2.0</string>
+    <string name="app_name">I BIKE KNX</string>
     <string name="title_section4">Setting</string>
     <string name="title_section3">Notes</string>
     <string name="title_section2">Trips</string>
@@ -78,6 +78,7 @@
 
     <string name="email_hint">name@domain</string>
     <string name="zip_hint">12345</string>
+    <string name="url_hint">h</string>
 
     <string-array name="trippurposeArray">
         <item>Commute</item>
@@ -91,5 +92,6 @@
     </string-array>
 
     <string name="title_activity_main">I BIKE KNX</string>
+    <string name="postURL">https://cycleknox.ibikeknx.com/submit_trip.php</string>
 
 </resources>

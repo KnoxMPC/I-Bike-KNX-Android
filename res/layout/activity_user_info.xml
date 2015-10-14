@@ -31,7 +31,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:text="Get started with I BIKE KNX" />
+                android:text="More information at I Bike KNX" />
 
             <TextView
                 android:id="@+id/textView1"
@@ -303,6 +303,39 @@
                 android:layout_alignRight="@+id/TextEmail"
                 android:layout_alignTop="@+id/textViewRiderHistory"
                 android:entries="@array/riderhistoryArray" />
+
+            <!--<TextView
+                android:id="@+id/textView11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textViewRiderHistory"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="30dp"
+                android:text="(Advanced) Trip upload URL"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/textUploadURLLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/textView1"
+                android:layout_below="@+id/textView11"
+                android:layout_marginTop="15dp"
+                android:text="Upload URL"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/textUploadURL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/textUploadURLLabel"
+                android:layout_alignRight="@+id/incomeSpinner"
+                android:layout_toRightOf="@+id/textView7"
+                android:ems="10"
+                android:hint="@string/url_hint"
+                android:inputType="textUri" >
+            </EditText>-->
+
         </RelativeLayout>
     </LinearLayout>
 

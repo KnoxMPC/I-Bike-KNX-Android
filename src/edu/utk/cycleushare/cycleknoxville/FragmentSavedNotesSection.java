@@ -336,10 +336,12 @@ public class FragmentSavedNotesSection extends Fragment {
 					}
 					// Toast.makeText(getActivity(), "Selected: " + noteIdArray,
 					// Toast.LENGTH_SHORT).show();
-					if (noteIdArray.size() == 0) {
-						saveMenuItemDelete.setEnabled(false);
-					} else {
-						saveMenuItemDelete.setEnabled(true);
+					if(saveMenuItemDelete != null) {
+						if (noteIdArray.size() == 0) {
+							saveMenuItemDelete.setEnabled(false);
+						} else {
+							saveMenuItemDelete.setEnabled(true);
+						}
 					}
 
 					mActionModeNote.setTitle(noteIdArray.size() + " Selected");
