@@ -51,7 +51,7 @@
                 android:layout_alignLeft="@+id/textView1"
                 android:layout_below="@+id/textView1"
                 android:layout_marginTop="15dp"
-                android:text="Age"
+                android:text="Age:"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -61,7 +61,7 @@
                 android:layout_alignLeft="@+id/textView1"
                 android:layout_below="@+id/ageSpinner"
                 android:layout_marginTop="15dp"
-                android:text="Email"
+                android:text="Email:"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
@@ -82,7 +82,7 @@
                 android:layout_alignLeft="@+id/textView1"
                 android:layout_below="@+id/TextEmail"
                 android:layout_marginTop="25dp"
-                android:text="Gender"
+                android:text="Gender:"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Spinner
@@ -101,7 +101,7 @@
                 android:layout_alignLeft="@+id/textView1"
                 android:layout_below="@+id/genderSpinner"
                 android:layout_marginTop="15dp"
-                android:text="Ethnicity"
+                android:text="Ethnicity:"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Spinner

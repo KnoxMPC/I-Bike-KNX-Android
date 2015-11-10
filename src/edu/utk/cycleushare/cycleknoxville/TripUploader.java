@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
@@ -61,6 +62,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.provider.Settings;
 import android.provider.Settings.System;
 import android.util.Log;
 import android.widget.ListView;
@@ -111,7 +113,7 @@ public class TripUploader extends AsyncTask<Long, Integer, Boolean> {
 	}
 
 	private JSONObject getCoordsJSON(long tripId) throws JSONException {
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
 		mDb.openReadOnly();
 		Cursor tripCoordsCursor = mDb.fetchAllCoordsForTrip(tripId);
@@ -167,14 +169,14 @@ public class TripUploader extends AsyncTask<Long, Integer, Boolean> {
 		JSONObject user = new JSONObject();
 		Map<String, Integer> fieldMap = new HashMap<String, Integer>();
 
-		fieldMap.put(USER_EMAIL, Integer.valueOf(edu.utk.cycleushare.cycleknoxville.FragmentUserInfo.PREF_EMAIL));
+		fieldMap.put(USER_EMAIL, FragmentUserInfo.PREF_EMAIL);
 
 		fieldMap.put(USER_ZIP_HOME,
-				Integer.valueOf(edu.utk.cycleushare.cycleknoxville.FragmentUserInfo.PREF_ZIPHOME));
+				FragmentUserInfo.PREF_ZIPHOME);
 		fieldMap.put(USER_ZIP_WORK,
-				Integer.valueOf(edu.utk.cycleushare.cycleknoxville.FragmentUserInfo.PREF_ZIPWORK));
+				FragmentUserInfo.PREF_ZIPWORK);
 		fieldMap.put(USER_ZIP_SCHOOL,
-				Integer.valueOf(edu.utk.cycleushare.cycleknoxville.FragmentUserInfo.PREF_ZIPSCHOOL));
+				FragmentUserInfo.PREF_ZIPSCHOOL);
 
 		SharedPreferences settings = this.mCtx.getSharedPreferences("PREFS", 0);
 		for (Entry<String, Integer> entry : fieldMap.entrySet()) {
@@ -218,7 +220,7 @@ public class TripUploader extends AsyncTask<Long, Integer, Boolean> {
 		tripCursor.close();
 		mDb.close();
 
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 		tripData.add(note);
 		tripData.add(purpose);
 		tripData.add(df.format(startTime));
@@ -228,13 +230,14 @@ public class TripUploader extends AsyncTask<Long, Integer, Boolean> {
 	}
 
 	public String getDeviceId() {
-		String androidId = System.getString(this.mCtx.getContentResolver(),
-				System.ANDROID_ID);
+		String androidId = Settings.Secure.getString(mCtx.getApplicationContext().getContentResolver(),
+				Settings.Secure.ANDROID_ID);
+				/*System.getString(this.mCtx.getContentResolver(),
+				System.ANDROID_ID); */
 		String androidBase = "androidDeviceId-";
 
 		if (androidId == null) { // This happens when running in the Emulator
-			final String emulatorId = "android-RunningAsTestingDeleteMe";
-			return emulatorId;
+			return "android-RunningAsTestingDeleteMe";
 		}
 		String deviceId = androidBase.concat(androidId);
 

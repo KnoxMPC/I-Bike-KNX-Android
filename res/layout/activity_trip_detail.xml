@@ -1,27 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="fill_parent"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin" >
+    android:paddingTop="@dimen/activity_vertical_margin">
+
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/tripDetailHeading"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Additional Details:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="15dp"
+        android:text="Please tell us about your trip and tap submit."
+        android:gravity="center_horizontal" />
+
+    <TextView
+        android:id="@+id/tripPurposeLabel"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="15dp"
+
+        android:layout_below="@+id/tripDetailHeading"
+
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Trip purpose:" />
+
+    <!-- TODO add images to spinner entries -->
+    <Spinner
+        android:id="@+id/tripPurposeSpinner"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="15dp"
+
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+
+        android:layout_toRightOf="@+id/tripPurposeLabel"
+        android:layout_toEndOf="@+id/tripPurposeLabel"
+
+        android:layout_below="@+id/tripPurposeLabel"
+
+
+        android:entries="@array/tripPurposeArray" />
+
+    <TextView
+        android:id="@+id/tripTransitLabel"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="15dp"
+
+        android:layout_below="@+id/tripPurposeSpinner"
+
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Transit used:" />
+
+    <RadioGroup
+        android:id="@+id/transitRadioGroup"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="15dp"
+
+        android:orientation="horizontal"
+
+        android:layout_alignStart="@+id/tripPurposeSpinner"
+        android:layout_alignLeft="@+id/tripPurposeSpinner"
+
+        android:layout_below="@+id/tripTransitLabel"
+
+        >
+
+        <RadioButton
+            android:id="@+id/radioTransitNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No"
+            android:onClick="onRadioButtonClicked" />
+
+        <RadioButton
+            android:id="@+id/radioTransitYes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Yes"
+            android:onClick="onRadioButtonClicked" />
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/tripNoteLabel"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="15dp"
+
+        android:layout_below="@+id/transitRadioGroup"
+
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Additional details:" />
 
     <EditText
-        android:id="@+id/editTextTripDetail"
+        android:id="@+id/tripNoteEdit"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textMultiLine" >
+
+        android:layout_marginTop="15dp"
+
+        android:layout_below="@+id/tripNoteLabel"
+
+        android:inputType="textMultiLine"
+
+        android:maxLength="256"
+        android:lines="1"
+
+        android:hint="(Optional)"
+
+        android:textIsSelectable="false"
+        android:gravity="top|start"
+        android:enabled="true"
+
+        >
 
         <requestFocus />
     </EditText>
-</LinearLayout>
+</RelativeLayout>

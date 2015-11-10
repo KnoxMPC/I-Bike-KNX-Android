@@ -2,6 +2,7 @@ package edu.utk.cycleushare.cycleknoxville;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import android.content.Context;
@@ -52,7 +53,7 @@ public class SavedTripsAdapter extends SimpleCursorAdapter {
 
 		cursor.moveToPosition(position);
 
-		SimpleDateFormat sdfStart = new SimpleDateFormat("MMMM d, y  HH:mm");
+		SimpleDateFormat sdfStart = new SimpleDateFormat("MMMM d, y  HH:mm", Locale.US);
 		// sdfStart.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Double startTime = cursor.getDouble(cursor.getColumnIndex("start"));
 		String start = sdfStart.format(startTime);
@@ -61,7 +62,7 @@ public class SavedTripsAdapter extends SimpleCursorAdapter {
 		textViewPurpose
 				.setText(cursor.getString(cursor.getColumnIndex("purp")));
 
-		SimpleDateFormat sdfDuration = new SimpleDateFormat("HH:mm:ss");
+		SimpleDateFormat sdfDuration = new SimpleDateFormat("HH:mm:ss", Locale.US);
 		sdfDuration.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Double endTime = cursor.getDouble(cursor.getColumnIndex("endtime"));
 		String duration = sdfDuration.format(endTime - startTime);

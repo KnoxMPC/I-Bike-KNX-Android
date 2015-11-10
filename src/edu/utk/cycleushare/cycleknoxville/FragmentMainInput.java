@@ -1,6 +1,7 @@
 package edu.utk.cycleushare.cycleknoxville;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -62,7 +63,7 @@ public class FragmentMainInput extends Fragment implements ConnectionCallbacks,
 
 	Location currentLocation = new Location("");
 
-	final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+	final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.US);
 
 	// Need handler for callbacks to the UI thread
 	final Handler mHandler = new Handler();
@@ -137,13 +138,13 @@ public class FragmentMainInput extends Fragment implements ConnectionCallbacks,
 				if (state > edu.utk.cycleushare.cycleknoxville.RecordingService.STATE_IDLE) {
 					if (state == edu.utk.cycleushare.cycleknoxville.RecordingService.STATE_FULL) {
 						startActivity(new Intent(getActivity(),
-								edu.utk.cycleushare.cycleknoxville.TripPurposeActivity.class));
-					} else { // RECORDING OR PAUSED:
+								edu.utk.cycleushare.cycleknoxville.TripDetailActivity.class));
+					} /* else { // RECORDING OR PAUSED:
 						// startActivity(new Intent(MainInput.this,
 						// RecordingActivity.class));
-					}
+					} */
 					getActivity().finish();
-				} else {
+				} /*else {
 					// Idle. First run? Switch to user prefs screen if there are
 					// no prefs stored yet
 					// SharedPreferences settings =
@@ -155,7 +156,7 @@ public class FragmentMainInput extends Fragment implements ConnectionCallbacks,
 					// ListView listSavedTrips = (ListView)
 					// findViewById(R.id.ListSavedTrips);
 					// populateList(listSavedTrips);
-				}
+				}*/
 				if(isAdded())
 				getActivity().unbindService(this); // race? this says
 													// we no longer care
@@ -171,7 +172,7 @@ public class FragmentMainInput extends Fragment implements ConnectionCallbacks,
 		Button startButton = (Button) rootView.findViewById(R.id.buttonStart);
 		startButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if (isRecording == false) {
+				if (!isRecording) {
 					// Before we go to record, check GPS status
 					final LocationManager manager = (LocationManager) getActivity()
 							.getSystemService(Context.LOCATION_SERVICE);
@@ -186,7 +187,7 @@ public class FragmentMainInput extends Fragment implements ConnectionCallbacks,
 						startRecording();
 						// MainInputActivity.this.finish();
 					}
-				} else if (isRecording == true) {
+				} else /*if (isRecording) */ {
 					// pop up: save, discard, cancel
 					buildAlertMessageSaveClicked();
 				}
@@ -210,7 +211,7 @@ public class FragmentMainInput extends Fragment implements ConnectionCallbacks,
 
 					Log.v("Jason", "Note ID in MainInput: " + note.noteid);
 
-					if (isRecording == true) {
+					if (isRecording) {
 						fi.putExtra("isRecording", 1);
 					} else {
 						fi.putExtra("isRecording", 0);
@@ -423,7 +424,7 @@ public class FragmentMainInput extends Fragment implements ConnectionCallbacks,
 							// purpose or
 							// notes)
 							fi = new Intent(getActivity(),
-									edu.utk.cycleushare.cycleknoxville.TripPurposeActivity.class);
+									edu.utk.cycleushare.cycleknoxville.TripDetailActivity.class);
 							trip.updateTrip("", "", "", "");
 
 							startActivity(fi);

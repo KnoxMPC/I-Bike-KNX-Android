@@ -1,7 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/action_skip_note_detail"
+    <item
+        android:id="@+id/action_cancel_note_detail"
         android:showAsAction="always"
-          android:title="skip"/>
+        android:title="cancel" />
     <item android:id="@+id/action_save_note_detail"
         android:showAsAction="always"
           android:title="save"/>

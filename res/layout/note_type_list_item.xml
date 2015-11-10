@@ -14,8 +14,9 @@
         android:id="@+id/TextViewNoteType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/ImageViewNoteType" 
+        android:layout_toRightOf="@+id/ImageViewNoteType"
+        android:layout_toEndOf="@+id/ImageViewNoteType"
         android:paddingTop="13dp"
         android:paddingLeft="10dp"
-		android:textSize="50px"/>
+        android:textSize="20sp" />
 </RelativeLayout>

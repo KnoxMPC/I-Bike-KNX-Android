@@ -4,5 +4,5 @@
           android:title="cancel"/>
     <item android:id="@+id/action_save_note_type"
         android:showAsAction="always"
-          android:title="save"/>
+        android:title="next" />
 </menu>

@@ -12,7 +12,11 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingRight="@dimen/activity_horizontal_margin" >
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingStart="@dimen/activity_horizontal_margin">
 
         <ImageButton
             android:id="@+id/imageButton"
@@ -29,6 +33,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="60dp"
             android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp"
             android:text="Add" />
 
         <TextView
@@ -38,6 +43,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="75dp"
             android:layout_marginLeft="35dp"
+            android:layout_marginStart="35dp"
             android:text="Photo" />
 
         <ImageView
@@ -48,6 +54,7 @@
             android:contentDescription="noteImage"
             android:layout_marginTop="9dp"
             android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:scaleType="centerCrop" />
         
         <Button
@@ -75,6 +82,11 @@
             android:id="@+id/editTextNoteDetail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
+            android:layout_marginTop="16dp"
+
+            android:lines="1"
+
             android:ems="10"
             android:inputType="textMultiLine" >
 

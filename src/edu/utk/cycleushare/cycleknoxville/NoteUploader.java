@@ -30,12 +30,16 @@
 
 package edu.utk.cycleushare.cycleknoxville;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
@@ -46,6 +50,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.provider.Settings.System;
 import android.util.Log;
 import android.widget.ListView;
@@ -56,6 +61,7 @@ public class NoteUploader extends AsyncTask<Long, Integer, Boolean> {
 	edu.utk.cycleushare.cycleknoxville.DbAdapter mDb;
 	byte[] imageData;
 	Boolean imageDataNull;
+	String imgname;
 
 	public static final int kSaveNoteProtocolVersion = 4;
 
@@ -81,7 +87,7 @@ public class NoteUploader extends AsyncTask<Long, Integer, Boolean> {
 	}
 
 	private JSONObject getNoteJSON(long noteId) throws JSONException {
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
 		mDb.openReadOnly();
 		Cursor noteCursor = mDb.fetchNote(noteId);
@@ -121,8 +127,9 @@ public class NoteUploader extends AsyncTask<Long, Integer, Boolean> {
 			imageDataNull = true;
 		} else {
 			imageDataNull = false;
-			imageData = noteCursor.getBlob(noteCursor
-					.getColumnIndex(edu.utk.cycleushare.cycleknoxville.DbAdapter.K_NOTE_IMGDATA));
+			imgname = noteCursor.getString(fieldMap.get(NOTE_IMGURL));
+			//imageData = noteCursor.getBlob(noteCursor
+			//		.getColumnIndex(edu.utk.cycleushare.cycleknoxville.DbAdapter.K_NOTE_IMGDATA));
 		}
 
 		noteCursor.close();
@@ -136,8 +143,7 @@ public class NoteUploader extends AsyncTask<Long, Integer, Boolean> {
 		String androidBase = "androidDeviceId-";
 
 		if (androidId == null) { // This happens when running in the Emulator
-			final String emulatorId = "android-RunningAsTestingDeleteMe";
-			return emulatorId;
+			return "android-RunningAsTestingDeleteMe";
 		}
 		String deviceId = androidBase.concat(androidId);
 
@@ -296,7 +302,18 @@ public class NoteUploader extends AsyncTask<Long, Integer, Boolean> {
 						+ "Content-Disposition: form-data; name=\"file\"; filename=\""
 						+ deviceId + ".jpg\"\r\n"
 						+ "Content-Type: image/jpeg\r\n\r\n");
-				dos.write(imageData);
+				//dos.write(imageData);
+
+				Log.v("imgup", "trying to upload file: " + NoteDetailActivity.imgDir() + "/" + imgname + ".jpg");
+
+				int bufsz = 8192;
+				int len;
+				byte[] buf = new byte[bufsz];
+				InputStream is = new FileInputStream(NoteDetailActivity.imgDir() + "/" + imgname + ".jpg");
+				while ((len = is.read(buf, 0, bufsz)) != -1) {
+					dos.write(buf, 0, len);
+				}
+
 				dos.writeBytes("\r\n");
 			}
 

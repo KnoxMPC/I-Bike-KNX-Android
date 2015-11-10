@@ -80,15 +80,16 @@
     <string name="zip_hint">12345</string>
     <string name="url_hint">h</string>
 
-    <string-array name="trippurposeArray">
+    <string-array name="tripPurposeArray">
+        <item></item>
         <item>Commute</item>
         <item>School</item>
         <item>Work-Related</item>
         <item>Exercise</item>
-        <item>Social</item>
-        <item>Shopping</item>
+        <item>Social/Errand</item>
+        <!--<item>Shopping</item>
         <item>Errand</item>
-        <item>Other</item>
+        <item>Other</item>-->
     </string-array>
 
     <string name="title_activity_main">I BIKE KNX</string>

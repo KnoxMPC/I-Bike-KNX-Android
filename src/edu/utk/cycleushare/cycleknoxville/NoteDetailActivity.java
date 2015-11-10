@@ -1,14 +1,26 @@
 package edu.utk.cycleushare.cycleknoxville;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.Settings.System;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,6 +33,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import edu.utk.cycleushare.cycleknoxville.R;
 
@@ -33,8 +46,13 @@ public class NoteDetailActivity extends Activity {
 	ImageView imageView;
 	String imageURL = "";
 	byte[] noteImage;
-	Bitmap photo;
+	//Bitmap photo;
+
+	boolean photo_taken;
+
 	private static final int CAMERA_REQUEST = 1888;
+
+	String mCurrentPhotoPath = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,44 +81,127 @@ public class NoteDetailActivity extends Activity {
 				Log.v("Jason", "Add Photo");
 				Intent cameraIntent = new Intent(
 						android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-				startActivityForResult(cameraIntent, CAMERA_REQUEST);
+
+				// Ensure that there's a camera activity to handle the intent
+				if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+					// Create the File where the photo should go
+					File photoFile = null;
+					try {
+						photoFile = createImageFile();
+						if (photoFile != null) {
+							cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+							startActivityForResult(cameraIntent, CAMERA_REQUEST);
+							Log.v("img", "storing in " + mCurrentPhotoPath);
+						} else throw new IOException();
+					} catch (IOException ex) {
+						Toast.makeText(getBaseContext(), "Couldn't create image, please try again.", Toast.LENGTH_SHORT).show();
+					}
+				}
 			}
 		});
+
+		photo_taken = false;
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-			photo = (Bitmap) data.getExtras().get("data");
-			imageView.setImageBitmap(photo);
-			Log.v("Jason", "Image Photo: " + photo);
+		if (requestCode == CAMERA_REQUEST) {
+
+			if (resultCode == RESULT_OK /*&& data != null*/) {
+				try {
+
+					Uri img = Uri.fromFile(new File(mCurrentPhotoPath));
+
+					BitmapFactory.Options bmo = new BitmapFactory.Options();
+					bmo.inJustDecodeBounds = true;
+					BitmapFactory.decodeFile(mCurrentPhotoPath, bmo);
+
+					bmo.inJustDecodeBounds = false;
+					bmo.inSampleSize = Math.min(bmo.outWidth / imageView.getWidth(), bmo.outHeight / imageView.getHeight());
+					bmo.inPurgeable = true;
+					imageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath, bmo));
+
+
+					//photo = MediaStore.Images.Media.getBitmap(this.getContentResolver(), img);
+
+					photo_taken = true;
+
+					Log.v("img", "got photo");
+
+					//Log.v("Jason", "Image Photo: " + data.getData().toString());
+				} catch (NullPointerException e) {
+					Toast.makeText(getBaseContext(), "Couldn't open image, please try again.", Toast.LENGTH_SHORT).show();
+				}
+
+			} else {
+				Toast.makeText(getBaseContext(), "Image capture failed, please try again.", Toast.LENGTH_SHORT).show();
+			}
+
 		}
 	}
 
-	public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		bitmap.compress(CompressFormat.PNG, 0, outputStream);
-		return outputStream.toByteArray();
-	}
-
-	void submit(String noteDetailsToUpload, byte[] noteImage) {
+	void submit(String noteDetailsToUpload) {
 		final Intent xi = new Intent(this, edu.utk.cycleushare.cycleknoxville.NoteMapActivity.class);
 
 		edu.utk.cycleushare.cycleknoxville.NoteData note = edu.utk.cycleushare.cycleknoxville.NoteData.fetchNote(NoteDetailActivity.this, noteid);
 		note.populateDetails();
 
-		SimpleDateFormat sdfStart = new SimpleDateFormat("MMMM d, y  HH:mm");
+		SimpleDateFormat sdfStart = new SimpleDateFormat("MMMM d, y  HH:mm", Locale.US);
 		String fancyStartTime = sdfStart.format(note.startTime);
 		Log.v("Jason", "Start: " + fancyStartTime);
 
-		SimpleDateFormat sdfStart2 = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+		SimpleDateFormat sdfStart2 = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US);
 		String date = sdfStart2.format(note.startTime);
 
 		// Save the note details to the phone database. W00t!
 
 		String deviceId = getDeviceId();
-		if (photo != null) {
-			noteImage = getBitmapAsByteArray(photo);
+
+		if (!photo_taken && (noteDetailsToUpload == null || noteDetailsToUpload.length() <= 0)) {
+			Toast.makeText(getBaseContext(), "Please add a description or photo before submitting.", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
+		if (photo_taken) {
+			//noteImage = getBitmapAsByteArray(photo);
+
+			noteImage = new byte[0];
 			imageURL = deviceId + "-" + date + "-type-" + noteType;
+
+			BitmapFactory.Options bmo = new BitmapFactory.Options();
+			bmo.inJustDecodeBounds = true;
+			BitmapFactory.decodeFile(mCurrentPhotoPath, bmo);
+
+			bmo.inJustDecodeBounds = false;
+
+			{
+				int log = 1;
+				int pixels = Math.max(bmo.outWidth, bmo.outHeight);
+				while (pixels > 1000) {
+					log++;
+					pixels /= 2;
+				}
+				bmo.inSampleSize = log;
+			}
+
+			bmo.inPurgeable = true;
+
+			Bitmap compressed = BitmapFactory.decodeFile(mCurrentPhotoPath, bmo);
+
+			if (!new File(imgDir()).exists()) {
+				if (!new File(imgDir()).mkdir()) {
+					Toast.makeText(getBaseContext(), "Couldn't create image directory.", Toast.LENGTH_SHORT);
+					return;
+				}
+			}
+
+			try {
+				compressed.compress(CompressFormat.JPEG, 60,
+						new BufferedOutputStream(new FileOutputStream(
+								imgDir() + "/" + imageURL + ".jpg")));
+			} catch (FileNotFoundException fne) {
+				Toast.makeText(getBaseContext(), "Couldn't create compressed image.", Toast.LENGTH_SHORT).show();
+				return;
+			}
 		} else {
 			noteImage = null;
 			imageURL = "";
@@ -176,13 +277,25 @@ public class NoteDetailActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle presses on the action bar items
 		switch (item.getItemId()) {
-		case R.id.action_skip_note_detail:
-			// skip
-			submit("", null);
+			case R.id.action_cancel_note_detail:
+				// cancel
+				Toast.makeText(getBaseContext(), "Note discarded.",
+						Toast.LENGTH_SHORT).show();
+
+				// Cancel
+				edu.utk.cycleushare.cycleknoxville.NoteData note = edu.utk.cycleushare.cycleknoxville.NoteData.fetchNote(NoteDetailActivity.this, noteid);
+				Log.v("Jason", "Note id: " + noteid);
+				note.dropNote();
+
+				NoteDetailActivity.this.finish();
+
+				overridePendingTransition(android.R.anim.slide_in_left,
+						android.R.anim.slide_out_right);
+
 			return true;
 		case R.id.action_save_note_detail:
 			// save
-			submit(noteDetails.getEditableText().toString(), noteImage);
+			submit(noteDetails.getEditableText().toString());
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -192,19 +305,65 @@ public class NoteDetailActivity extends Activity {
 	// 2.0 and above
 	@Override
 	public void onBackPressed() {
-		// skip
-		submit("", null);
+		// cancel
+		Toast.makeText(getBaseContext(), "Note discarded.",
+				Toast.LENGTH_SHORT).show();
+
+		// Cancel
+		edu.utk.cycleushare.cycleknoxville.NoteData note = edu.utk.cycleushare.cycleknoxville.NoteData.fetchNote(NoteDetailActivity.this, noteid);
+		Log.v("Jason", "Note id: " + noteid);
+		note.dropNote();
+
+		NoteDetailActivity.this.finish();
+
+		overridePendingTransition(android.R.anim.slide_in_left,
+				android.R.anim.slide_out_right);
+
 	}
 
 	// Before 2.0
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			// skip
-			submit("", null);
+			// cancel
+			Toast.makeText(getBaseContext(), "Note discarded.",
+					Toast.LENGTH_SHORT).show();
+
+			// Cancel
+			edu.utk.cycleushare.cycleknoxville.NoteData note = edu.utk.cycleushare.cycleknoxville.NoteData.fetchNote(NoteDetailActivity.this, noteid);
+			Log.v("Jason", "Note id: " + noteid);
+			note.dropNote();
+
+			NoteDetailActivity.this.finish();
+
+			overridePendingTransition(android.R.anim.slide_in_left,
+					android.R.anim.slide_out_right);
+
 			return true;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
 
+
+	private File createImageFile() throws IOException {
+		// Create an image file name
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+		String imageFileName = "note_" + timeStamp + "_";
+		File storageDir = Environment.getExternalStoragePublicDirectory(
+				Environment.DIRECTORY_DCIM);
+		File image = File.createTempFile(
+				imageFileName,  /* prefix */
+				".jpg",         /* suffix */
+				storageDir      /* directory */
+		);
+
+		// Save a file: path for use with ACTION_VIEW intents
+		mCurrentPhotoPath = /*"file:" +*/ image.getAbsolutePath();
+
+		return image;
+	}
+
+	public static String imgDir() {
+		return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/ibikeknx";
+	}
 }

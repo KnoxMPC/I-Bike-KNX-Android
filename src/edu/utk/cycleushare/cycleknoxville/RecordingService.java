@@ -30,6 +30,7 @@
 
 package edu.utk.cycleushare.cycleknoxville;
 
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,7 +63,6 @@ public class RecordingService extends Service implements LocationListener {
 	static int BELL_NEXT_INTERVAL = 5;
 	Timer timer;
 	SoundPool soundpool;
-	int bikebell;
 	final Handler mHandler = new Handler();
 	final Runnable mRemindUser = new Runnable() {
 		public void run() {
@@ -95,7 +95,7 @@ public class RecordingService extends Service implements LocationListener {
 	public void onCreate() {
 		super.onCreate();
 		soundpool = new SoundPool(1, AudioManager.STREAM_NOTIFICATION, 0);
-		bikebell = soundpool.load(this.getBaseContext(), R.raw.bikebell, 1);
+		//bikebell = soundpool.load(this.getBaseContext(), R.raw.bikebell, 1);
 	}
 
 	@Override
@@ -265,7 +265,7 @@ public class RecordingService extends Service implements LocationListener {
 		int icon = R.drawable.icon48;
 		long when = System.currentTimeMillis();
 		int minutes = (int) (when - trip.startTime) / 60000;
-		CharSequence tickerText = String.format("Still recording (%d min)",
+		CharSequence tickerText = String.format(Locale.getDefault(), "Still recording (%d min)",
 				minutes);
 
 		Notification notification = new Notification(icon, tickerText, when);
@@ -347,7 +347,7 @@ public class RecordingService extends Service implements LocationListener {
 
 	void notifyListeners() {
 		if (recordActivity != null) {
-			Log.v("Jason", "Distance Traveled: hahaha");
+			Log.v("Jason", "Distance Traveled: " + distanceTraveled);
 			recordActivity.updateStatus(trip.numpoints, distanceTraveled,
 					curSpeed, maxSpeed);
 		}

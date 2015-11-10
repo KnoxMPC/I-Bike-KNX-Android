@@ -61,10 +61,7 @@
             android:name="edu.utk.cycleushare.cycleknoxville.SavedTripsActivity"
             android:label="@string/title_activity_saved_trips" >
         </activity>
-        <activity
-            android:name="edu.utk.cycleushare.cycleknoxville.TripDetailActivity"
-            android:label="@string/title_activity_trip_detail" >
-        </activity>
+
         <activity
             android:name="edu.utk.cycleushare.cycleknoxville.NoteTypeActivity"
             android:label="@string/title_activity_note_type" >

@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -61,12 +62,18 @@ public class NoteMapActivity extends Activity {
 			TextView t2 = (TextView) findViewById(R.id.TextViewMapNoteDetails);
 			TextView t3 = (TextView) findViewById(R.id.TextViewMapNoteFancyStart);
 
-			String[] noteTypeText = new String[] { "Pavement issue",
+			String[] noteTypeText = new String[]{"Pavement issue", "Traffic signal",
+					"Enforcement", /*"Bike parking",*/ "Bike lane issue",
+					"Note this issue", /*"Bike parking",*/ /*"Bike shops",*/
+				/*"Public restrooms",*/ "Secret passage" /*,"Water fountains,"*/
+				/*"Note this asset"*/};
+
+					/*new String[] { "Pavement issue",
 					"Traffic signal", "Enforcement", "Bike parking",
 					"Bike lane issue", "Note this issue", "Bike parking",
 					"Bike shops", "Public restrooms", "Secret passage",
 					"Water fountains", "Note this asset" };
-
+					*/
 			t1.setText(noteTypeText[note.notetype]);
 			t2.setText(note.notedetails);
 			t3.setText(note.notefancystart);
@@ -105,8 +112,8 @@ public class NoteMapActivity extends Activity {
 			if (note.noteimageurl.equals("")) {
 			} else {
 				// Store photo error, retrieve error
-				photo = BitmapFactory.decodeByteArray(note.noteimagedata, 0,
-						note.noteimagedata.length);
+				photo = BitmapFactory.decodeFile(NoteDetailActivity.imgDir() + "/" + note.noteimageurl + ".jpg");
+
 				if (photo.getHeight() > photo.getWidth()) {
 					imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 				} else {

@@ -1,6 +1,7 @@
 package edu.utk.cycleushare.cycleknoxville;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -44,7 +45,7 @@ public class SavedNotesAdapter extends SimpleCursorAdapter {
 
 		cursor.moveToPosition(position);
 
-		SimpleDateFormat sdfStart = new SimpleDateFormat("MMMM d, y  HH:mm");
+		SimpleDateFormat sdfStart = new SimpleDateFormat("MMMM d, y  HH:mm", Locale.US);
 		// sdfStart.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Double startTime = cursor.getDouble(cursor
 				.getColumnIndex("noterecorded"));
@@ -52,11 +53,11 @@ public class SavedNotesAdapter extends SimpleCursorAdapter {
 
 		textViewStart.setText(start);
 
-		String[] noteTypeText = new String[] { "Pavement issue",
-				"Traffic signal", "Enforcement", "Bike parking",
-				"Bike lane issue", "Note this issue", "Bike parking",
-				"Bike shops", "Public restrooms", "Secret passage",
-				"Water fountains", "Note this asset" };
+		String[] noteTypeText = new String[]{"Pavement issue", "Traffic signal",
+				"Enforcement", /*"Bike parking",*/ "Bike lane issue",
+				"Note this issue", /*"Bike parking",*/ /*"Bike shops",*/
+				/*"Public restrooms",*/ "Secret passage" /*"Water fountains,"*/
+				/*"Note this asset"*/};
 
 		textViewType.setText(noteTypeText[cursor.getInt(cursor
 				.getColumnIndex("notetype"))]);
@@ -82,8 +83,8 @@ public class SavedNotesAdapter extends SimpleCursorAdapter {
 				imageNoteType.setImageResource(R.drawable.noteissuepicker_high);
 				break;
 			case 5:
-				imageNoteType.setImageResource(R.drawable.noteissuepicker_high);
-				break;
+				imageNoteType.setImageResource(R.drawable.noteassetpicker_high);
+				break;/*
 			case 6:
 				imageNoteType.setImageResource(R.drawable.noteassetpicker_high);
 				break;
@@ -101,7 +102,7 @@ public class SavedNotesAdapter extends SimpleCursorAdapter {
 				break;
 			case 11:
 				imageNoteType.setImageResource(R.drawable.noteassetpicker_high);
-				break;
+				break;*/
 			}
 		} else if (status == 1) {
 			imageNoteType.setImageResource(R.drawable.failedupload_high);
