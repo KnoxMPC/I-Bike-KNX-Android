@@ -40,6 +40,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -49,13 +50,16 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+
+import com.google.android.gms.location.LocationRequest;
 
 import edu.utk.cycleushare.cycleknoxville.*;
 
-public class RecordingService extends Service implements LocationListener {
+public class RecordingService extends Service implements /*LocationListener, */com.google.android.gms.location.LocationListener {
 	edu.utk.cycleushare.cycleknoxville.FragmentMainInput recordActivity;
-	LocationManager lm = null;
+	//LocationManager lm = null;
 	edu.utk.cycleushare.cycleknoxville.DbAdapter mDb;
 
 	// Bike bell variables
@@ -85,6 +89,14 @@ public class RecordingService extends Service implements LocationListener {
 	int state = STATE_IDLE;
 	private final MyServiceBinder myServiceBinder = new MyServiceBinder();
 
+	private static final LocationRequest REQUEST = LocationRequest.create()
+			.setInterval(5000) // 5 seconds
+			.setFastestInterval(16) // 16ms = 60fps
+			.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+	private LocationApiHandler loc;
+
+
 	// ---SERVICE methods - required! -----------------
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -93,6 +105,7 @@ public class RecordingService extends Service implements LocationListener {
 
 	@Override
 	public void onCreate() {
+        loc = new LocationApiHandler(this, this, REQUEST);
 		super.onCreate();
 		soundpool = new SoundPool(1, AudioManager.STREAM_NOTIFICATION, 0);
 		//bikebell = soundpool.load(this.getBaseContext(), R.raw.bikebell, 1);
@@ -162,8 +175,10 @@ public class RecordingService extends Service implements LocationListener {
 		setNotification();
 
 		// Start listening for GPS updates!
-		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+//		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
+		loc.startLocationUpdates();
 
 		// Set up timer for bike bell
 		if (timer != null) {
@@ -181,20 +196,23 @@ public class RecordingService extends Service implements LocationListener {
 
 	public void pauseRecording() {
 		this.state = STATE_PAUSED;
-		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		lm.removeUpdates(this);
+		loc.stopLocationUpdates();
+//		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//		lm.removeUpdates(this);
 	}
 
 	public void resumeRecording() {
 		this.state = STATE_RECORDING;
-		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+		loc.startLocationUpdates();
+//		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 	}
 
 	public long finishRecording() {
 		this.state = STATE_FULL;
-		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		lm.removeUpdates(this);
+		loc.stopLocationUpdates();
+//		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//		lm.removeUpdates(this);
 
 		clearNotifications();
 
@@ -206,8 +224,10 @@ public class RecordingService extends Service implements LocationListener {
 			trip.dropTrip();
 		}
 
-		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		lm.removeUpdates(this);
+		loc.stopLocationUpdates();
+
+//		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//		lm.removeUpdates(this);
 
 		clearNotifications();
 		this.state = STATE_IDLE;
@@ -244,17 +264,6 @@ public class RecordingService extends Service implements LocationListener {
 		}
 	}
 
-	@Override
-	public void onProviderDisabled(String arg0) {
-	}
-
-	@Override
-	public void onProviderEnabled(String arg0) {
-	}
-
-	@Override
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-	}
 
 	// END LocationListener implementation:
 
@@ -268,7 +277,7 @@ public class RecordingService extends Service implements LocationListener {
 		CharSequence tickerText = String.format(Locale.getDefault(), "Still recording (%d min)",
 				minutes);
 
-		Notification notification = new Notification(icon, tickerText, when);
+/*		Notification notification = new Notification(icon, tickerText, when);
 		notification.flags |= Notification.FLAG_ONGOING_EVENT
 				| Notification.FLAG_SHOW_LIGHTS;
 		notification.ledARGB = 0xffff00ff;
@@ -283,6 +292,21 @@ public class RecordingService extends Service implements LocationListener {
 				notificationIntent, 0);
 		notification.setLatestEventInfo(context, contentTitle, contentText,
 				contentIntent);
+*/
+		Notification notification = new NotificationCompat.Builder(this)
+				.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon48))
+				.setTicker(String.format(Locale.getDefault(), "Still recording (%d min)", minutes))
+				.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, FragmentMainInput.class), 0))
+				.setContentTitle("I BIKE KNX - Recording")
+				.setContentText("Tap to see your ongoing trip")
+				.build();
+
+		notification.flags |= Notification.FLAG_ONGOING_EVENT
+				| Notification.FLAG_SHOW_LIGHTS;
+		notification.ledARGB = 0xffff00ff;
+		notification.ledOnMS = 300;
+		notification.ledOffMS = 3000;
+
 		final int RECORDING_ID = 1;
 		mNotificationManager.notify(RECORDING_ID, notification);
 	}
@@ -293,7 +317,7 @@ public class RecordingService extends Service implements LocationListener {
 		CharSequence tickerText = "Recording...";
 		long when = System.currentTimeMillis();
 
-		Notification notification = new Notification(icon, tickerText, when);
+/*		Notification notification = new Notification(icon, tickerText, when);
 
 		notification.ledARGB = 0xffff00ff;
 		notification.ledOnMS = 300;
@@ -311,6 +335,22 @@ public class RecordingService extends Service implements LocationListener {
 				notificationIntent, 0);
 		notification.setLatestEventInfo(context, contentTitle, contentText,
 				contentIntent);
+*/
+
+		Notification notification = new NotificationCompat.Builder(this)
+				.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon48))
+				.setTicker(String.format(Locale.getDefault(), "Recording..."))
+				.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, FragmentMainInput.class), 0))
+				.setContentTitle("I BIKE KNX - Recording")
+				.setContentText("Tap to see your ongoing trip")
+				.build();
+
+		notification.flags |= Notification.FLAG_ONGOING_EVENT
+				| Notification.FLAG_SHOW_LIGHTS;
+		notification.ledARGB = 0xffff00ff;
+		notification.ledOnMS = 300;
+		notification.ledOffMS = 3000;
+
 
 		final int RECORDING_ID = 1;
 		mNotificationManager.notify(RECORDING_ID, notification);

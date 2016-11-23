@@ -3,11 +3,14 @@ package edu.utk.cycleushare.cycleknoxville;
 import java.util.HashMap;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -41,41 +44,28 @@ public class NoteTypeActivity extends Activity {
 	void prepareNoteTypeButtons() {
 		// Note Issue
 		noteTypeDescriptions
-				.put(0,
+				.put(NoteData.NoteType.pavementIssue.num, // 0,
 						"Here's a spot where the road needs to be repaired (pothole, rough concrete, gravel in the road, manhole cover, sewer grate).");
-		noteTypeDescriptions.put(1,
+		noteTypeDescriptions
+				.put(NoteData.NoteType.trafficSignal.num, // 1,
 				"Here's a signal that you can't activate with your bike.");
 		noteTypeDescriptions
-				.put(2,
+				.put(NoteData.NoteType.enforcement.num, // 2,
 						"The bike lane is always blocked here, cars disobey \"no right on red\"; anything where the cops can help make cycling safer.");
-		//noteTypeDescriptions.put(3,
-		//		"You need a bike rack to secure your bike here.");
 		noteTypeDescriptions
-				.put(3,
+				.put(NoteData.NoteType.bikeLaneIssue.num, // 4,
 						"Where the bike lane ends (abruptly) or is too narrow (pesky parked cars).");
 		noteTypeDescriptions
-				.put(4,
+				.put(NoteData.NoteType.noteThisIssue.num, // 5,
 						"Anything else ripe for improvement: want a sharrow, a sign, a bike lane? Share the details.");
-
-		// Note Asset
-		//noteTypeDescriptions
-		//		.put(6,
-		//				"Park them here and remember to secure your bike well! Please only include racks or other objects intended for bikes.");
-		//noteTypeDescriptions
-		//		.put(7,
-		//				"Have a flat, a broken chain, or spongy brakes? Or do you need a bike to jump into this world of cycling in the first place? Here's a shop ready to help.");
-		//noteTypeDescriptions
-		//		.put(8,
-		//				"Help us make cycling mainstream! Here's a place to refresh yourself before you re-enter the fashionable world of Knoxville.");
 		noteTypeDescriptions
-				.put(5,
+				.put(NoteData.NoteType.secretPassage.num, // 9,
 						"Here's an access point under the tracks, through the park, onto a trail, or over a ravine.");
-		//noteTypeDescriptions
-		//		.put(10,
-		//				"Here's a spot to fill your bottle on those hot summer days. Stay hydrated!");
-		//noteTypeDescriptions
-		//		.put(11,
-		//				"Anything else we should map to help your fellow cyclists? Share the details.");
+		noteTypeDescriptions
+				.put(NoteData.NoteType.crashNearMiss.num, // 12,
+						"Note incidents here, after reporting via 911 call. Include your cell/email, what happened, time/date, location & description of vehicle. <a href=\"http://www.ibikeknx.com/brochures\">What to do after a crash</a>"
+				);
+						//"Please note crashes, near-misses, and harassment here. More information on what to do after a crash is on our website: http://www.ibikeknx.com/brochures");
 	}
 
 	@Override
@@ -95,11 +85,9 @@ public class NoteTypeActivity extends Activity {
 		isRecording = myIntent.getIntExtra("isRecording", -1);
 
 		final ListView listView = (ListView) findViewById(R.id.listViewNoteType);
-		values = new String[] { "Pavement issue", "Traffic signal",
-				"Enforcement", /*"Bike parking",*/ "Bike lane issue",
-				"Note this issue", /*"Bike parking",*/ /*"Bike shops",*/
-				/*"Public restrooms",*/ "Secret passage" /*"Water fountains,"*/
-				/*"Note this asset"*/};
+		values = new String[]{"Pavement issue", "Traffic signal",
+				"Enforcement", "Bike lane issue", "Note this issue", "Secret passage",
+				"Crash / Near Miss"};
 		// final ArrayList<String> list = new ArrayList<String>();
 		// for (int i = 0; i < values.length; ++i) {
 		// list.add(values[i]);
@@ -126,12 +114,55 @@ public class NoteTypeActivity extends Activity {
 				oldSelection = view;
 				view.setBackgroundColor(Color.parseColor("#ff33b5e5"));
 				// view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.bg_key));
-				noteType = position;
+				//noteType = position;
+				switch(position){
+					case 0: // pavement issue
+						noteType = NoteData.NoteType.pavementIssue.num; // 0;
+						break;
+					case 1: // traffic signal
+						noteType = NoteData.NoteType.trafficSignal.num; // 1;
+						break;
+					case 2: // enforcement
+						noteType = NoteData.NoteType.enforcement.num; // 2;
+						break;
+					case 3: // bike lane issue
+						noteType = NoteData.NoteType.bikeLaneIssue.num; // 4;
+						break;
+					case 4: // note this
+						noteType = NoteData.NoteType.noteThisIssue.num; // 5;
+						break;
+					case 5: // secret passage
+						noteType = NoteData.NoteType.secretPassage.num; // 9;
+						break;
+					case 6: // crash / near miss
+						noteType = NoteData.NoteType.crashNearMiss.num; // 12;
+						break;
+				}
+/*
+				if(noteType == NoteData.NoteType.crashNearMiss.num){
+					AlertDialog.Builder builder = new AlertDialog.Builder(NoteTypeActivity.this);
+					builder.setMessage("Please report the incident to police by calling 911. Then, please submit this note, including your contact info, what happened, time, date, location, and description of the vehicle involved.")
+							.setCancelable(false)
+							.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									dialog.dismiss();
+								}
+							});
+					builder.create().show();
+				}
+*/
+
 				// Log.v("Jason", purpose);
-				((TextView) findViewById(R.id.textViewNoteTypeDesc))
-						.setText(Html.fromHtml(noteTypeDescriptions
-								.get(position)));
-				saveMenuItem.setEnabled(true);
+
+				TextView tv = (TextView) findViewById(R.id.textViewNoteTypeDesc);
+
+                tv.setText(Html.fromHtml(noteTypeDescriptions.get(noteType)));
+				tv.setMovementMethod(LinkMovementMethod.getInstance());
+                tv.setClickable(true);
+                tv.setLinkTextColor(Color.BLUE);
+
+                saveMenuItem.setEnabled(true);
 				// highlight
 			}
 

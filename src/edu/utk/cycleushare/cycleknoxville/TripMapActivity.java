@@ -43,10 +43,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import android.support.v4.app.Fragment;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -59,7 +62,7 @@ import edu.utk.cycleushare.cycleknoxville.*;
 import edu.utk.cycleushare.cycleknoxville.TripData;
 import edu.utk.cycleushare.cycleknoxville.TripUploader;
 
-public class TripMapActivity extends Activity {
+public class TripMapActivity extends Activity implements OnMapReadyCallback {
 	// private MapView mapView;
 	GoogleMap map;
 	// List<Overlay> mapOverlays;
@@ -82,8 +85,8 @@ public class TripMapActivity extends Activity {
 
 		try {
 			// Set zoom controls
-			map = ((MapFragment) getFragmentManager().findFragmentById(
-					R.id.tripMap)).getMap();
+			/*map = */((MapFragment) getFragmentManager().findFragmentById(
+					R.id.tripMap)).getMapAsync(this);
 			// mapView = (MapView) findViewById(R.id.tripMap);
 			// mapView.setBuiltInZoomControls(true);
 
@@ -91,131 +94,7 @@ public class TripMapActivity extends Activity {
 			// mapOverlays = mapView.getOverlays();
 			// if (mapOverlays != null) mapOverlays.clear();
 
-			Bundle cmds = getIntent().getExtras();
-			long tripid = cmds.getLong("showtrip");
 
-			edu.utk.cycleushare.cycleknoxville.TripData trip = edu.utk.cycleushare.cycleknoxville.TripData.fetchTrip(this, tripid);
-
-			// Show trip details
-			TextView t1 = (TextView) findViewById(R.id.TextViewMapPurpose);
-			TextView t2 = (TextView) findViewById(R.id.TextViewMapInfo);
-			TextView t3 = (TextView) findViewById(R.id.TextViewMapFancyStart);
-			t1.setText(trip.purp);
-			t2.setText(trip.info);
-			t3.setText(trip.fancystart);
-
-			// Center & zoom the map
-			// int latcenter = (trip.lathigh + trip.latlow) / 2;
-			// int lgtcenter = (trip.lgthigh + trip.lgtlow) / 2;
-			// LatLng center = new LatLng(latcenter, lgtcenter);
-
-			// map.animateCamera(CameraUpdateFactory.newLatLngZoom(center,16));
-
-			// trip = trips[0]; // always get just the first trip
-
-			gpspoints = trip.getPoints();
-
-			Log.v("Jason", gpspoints.toString());
-
-			Log.v("Jason", String.valueOf(trip.startpoint.latitude * 1E-6));
-			Log.v("Jason", String.valueOf(trip.startpoint.longitude * 1E-6));
-			Log.v("Jason", String.valueOf(trip.endpoint.latitude * 1E-6));
-			Log.v("Jason", String.valueOf(trip.endpoint.longitude * 1E-6));
-
-			if (trip.startpoint != null) {
-				map.addMarker(new MarkerOptions()
-						.icon(BitmapDescriptorFactory
-								.fromResource(R.drawable.pingreen))
-						.anchor(0.0f, 1.0f) // Anchors the marker on the bottom
-											// left
-						.position(
-								new LatLng(trip.startpoint.latitude * 1E-6,
-										trip.startpoint.longitude * 1E-6)));
-
-				// mapOverlays.add(new PushPinOverlay(trip.startpoint,
-				// R.drawable.pingreen));
-			}
-			if (trip.endpoint != null) {
-				map.addMarker(new MarkerOptions()
-						.icon(BitmapDescriptorFactory
-								.fromResource(R.drawable.pinpurple))
-						.anchor(0.0f, 1.0f) // Anchors the marker on the bottom
-											// left
-						.position(
-								new LatLng(trip.endpoint.latitude * 1E-6,
-										trip.endpoint.longitude * 1E-6)));
-
-				// mapOverlays.add(new PushPinOverlay(trip.endpoint,
-				// R.drawable.pinpurple));
-			}
-
-			bounds = new LatLngBounds.Builder();
-
-			PolylineOptions rectOptions = new PolylineOptions();
-			rectOptions.geodesic(true).color(Color.BLUE);
-
-			Log.v("Jason", String.valueOf(gpspoints.size()));
-
-			// //startpoint
-			// map.addMarker(new MarkerOptions()
-			// .icon(BitmapDescriptorFactory.fromResource(R.drawable.pingreen))
-			// .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
-			// .position(new LatLng(gpspoints.get(0).latitude*1E-6,
-			// gpspoints.get(0).longitude*1E-6)));
-			//
-			// //endpoint
-			// map.addMarker(new MarkerOptions()
-			// .icon(BitmapDescriptorFactory.fromResource(R.drawable.pinpurple))
-			// .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
-			// .position(new
-			// LatLng(gpspoints.get(gpspoints.size()-1).latitude*1E-6,
-			// gpspoints.get(gpspoints.size()-1).longitude*1E-6)));
-
-			for (int i = 0; i < gpspoints.size(); i++) {
-				LatLng point = new LatLng(gpspoints.get(i).latitude * 1E-6,
-						gpspoints.get(i).longitude * 1E-6);
-				// Log.v("Jason",String.valueOf(gpspoints.get(i).latitude*1E-6));
-				// Log.v("Jason",String.valueOf(gpspoints.get(i).longitude*1E-6));
-				bounds.include(point);
-				rectOptions.add(point);
-			}
-
-			polyline = map.addPolyline(rectOptions);
-
-			// map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(),
-			// 480, 320, 10));
-
-			map.setOnCameraChangeListener(new OnCameraChangeListener() {
-
-				@Override
-				public void onCameraChange(CameraPosition arg0) {
-					// Move camera.
-					map.moveCamera(CameraUpdateFactory.newLatLngBounds(
-							bounds.build(), 50));
-					// Remove listener to prevent position reset on camera move.
-					map.setOnCameraChangeListener(null);
-				}
-			});
-
-			// MapController mc = mapView.getController();
-			// mc.animateTo(center);
-			// Add 500 to map span, to guarantee pins fit on map
-			// mc.zoomToSpan(500+trip.lathigh - trip.latlow, 500+trip.lgthigh -
-			// trip.lgtlow);
-
-			// if (gpspoints == null) {
-			// AddPointsToMapLayerTask maptask = new AddPointsToMapLayerTask();
-			// maptask.execute(trip);
-			// } else {
-			// mapOverlays.add(gpspoints);
-			// }
-
-			if (trip.status < TripData.STATUS_SENT && cmds != null
-					&& cmds.getBoolean("uploadTrip", false)) {
-				// And upload to the cloud database, too! W00t W00t!
-				TripUploader uploader = new TripUploader(edu.utk.cycleushare.cycleknoxville.TripMapActivity.this);
-				uploader.execute(trip.tripid);
-			}
 
 		} catch (Exception e) {
 			Log.e("GOT!", e.toString());
@@ -270,6 +149,136 @@ public class TripMapActivity extends Activity {
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	public void onMapReady(GoogleMap googleMap) {
+		map = googleMap;
+		Bundle cmds = getIntent().getExtras();
+		long tripid = cmds.getLong("showtrip");
+
+		edu.utk.cycleushare.cycleknoxville.TripData trip = edu.utk.cycleushare.cycleknoxville.TripData.fetchTrip(this, tripid);
+
+		// Show trip details
+		TextView t1 = (TextView) findViewById(R.id.TextViewMapPurpose);
+		TextView t2 = (TextView) findViewById(R.id.TextViewMapInfo);
+		TextView t3 = (TextView) findViewById(R.id.TextViewMapFancyStart);
+		t1.setText(trip.purp);
+		t2.setText(trip.info);
+		t3.setText(trip.fancystart);
+
+		// Center & zoom the map
+		// int latcenter = (trip.lathigh + trip.latlow) / 2;
+		// int lgtcenter = (trip.lgthigh + trip.lgtlow) / 2;
+		// LatLng center = new LatLng(latcenter, lgtcenter);
+
+		// map.animateCamera(CameraUpdateFactory.newLatLngZoom(center,16));
+
+		// trip = trips[0]; // always get just the first trip
+
+		gpspoints = trip.getPoints();
+
+		Log.v("Jason", gpspoints.toString());
+
+		Log.v("Jason", String.valueOf(trip.startpoint.latitude * 1E-6));
+		Log.v("Jason", String.valueOf(trip.startpoint.longitude * 1E-6));
+		Log.v("Jason", String.valueOf(trip.endpoint.latitude * 1E-6));
+		Log.v("Jason", String.valueOf(trip.endpoint.longitude * 1E-6));
+
+		if (trip.startpoint != null) {
+			map.addMarker(new MarkerOptions()
+					.icon(BitmapDescriptorFactory
+							.fromResource(R.drawable.pingreen))
+					.anchor(0.0f, 1.0f) // Anchors the marker on the bottom
+					// left
+					.position(
+							new LatLng(trip.startpoint.latitude * 1E-6,
+									trip.startpoint.longitude * 1E-6)));
+
+			// mapOverlays.add(new PushPinOverlay(trip.startpoint,
+			// R.drawable.pingreen));
+		}
+		if (trip.endpoint != null) {
+			map.addMarker(new MarkerOptions()
+					.icon(BitmapDescriptorFactory
+							.fromResource(R.drawable.pinpurple))
+					.anchor(0.0f, 1.0f) // Anchors the marker on the bottom
+					// left
+					.position(
+							new LatLng(trip.endpoint.latitude * 1E-6,
+									trip.endpoint.longitude * 1E-6)));
+
+			// mapOverlays.add(new PushPinOverlay(trip.endpoint,
+			// R.drawable.pinpurple));
+		}
+
+		bounds = new LatLngBounds.Builder();
+
+		PolylineOptions rectOptions = new PolylineOptions();
+		rectOptions.geodesic(true).color(Color.BLUE);
+
+		Log.v("Jason", String.valueOf(gpspoints.size()));
+
+		// //startpoint
+		// map.addMarker(new MarkerOptions()
+		// .icon(BitmapDescriptorFactory.fromResource(R.drawable.pingreen))
+		// .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
+		// .position(new LatLng(gpspoints.get(0).latitude*1E-6,
+		// gpspoints.get(0).longitude*1E-6)));
+		//
+		// //endpoint
+		// map.addMarker(new MarkerOptions()
+		// .icon(BitmapDescriptorFactory.fromResource(R.drawable.pinpurple))
+		// .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
+		// .position(new
+		// LatLng(gpspoints.get(gpspoints.size()-1).latitude*1E-6,
+		// gpspoints.get(gpspoints.size()-1).longitude*1E-6)));
+
+		for (int i = 0; i < gpspoints.size(); i++) {
+			LatLng point = new LatLng(gpspoints.get(i).latitude * 1E-6,
+					gpspoints.get(i).longitude * 1E-6);
+			// Log.v("Jason",String.valueOf(gpspoints.get(i).latitude*1E-6));
+			// Log.v("Jason",String.valueOf(gpspoints.get(i).longitude*1E-6));
+			bounds.include(point);
+			rectOptions.add(point);
+		}
+
+		polyline = map.addPolyline(rectOptions);
+
+		// map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(),
+		// 480, 320, 10));
+
+		map.setOnCameraChangeListener(new OnCameraChangeListener() {
+
+			@Override
+			public void onCameraChange(CameraPosition arg0) {
+				// Move camera.
+				map.moveCamera(CameraUpdateFactory.newLatLngBounds(
+						bounds.build(), 50));
+				// Remove listener to prevent position reset on camera move.
+				map.setOnCameraChangeListener(null);
+			}
+		});
+
+		// MapController mc = mapView.getController();
+		// mc.animateTo(center);
+		// Add 500 to map span, to guarantee pins fit on map
+		// mc.zoomToSpan(500+trip.lathigh - trip.latlow, 500+trip.lgthigh -
+		// trip.lgtlow);
+
+		// if (gpspoints == null) {
+		// AddPointsToMapLayerTask maptask = new AddPointsToMapLayerTask();
+		// maptask.execute(trip);
+		// } else {
+		// mapOverlays.add(gpspoints);
+		// }
+
+		if (trip.status < TripData.STATUS_SENT && cmds != null
+				&& cmds.getBoolean("uploadTrip", false)) {
+			// And upload to the cloud database, too! W00t W00t!
+			TripUploader uploader = new TripUploader(edu.utk.cycleushare.cycleknoxville.TripMapActivity.this);
+			uploader.execute(trip.tripid);
 		}
 	}
 

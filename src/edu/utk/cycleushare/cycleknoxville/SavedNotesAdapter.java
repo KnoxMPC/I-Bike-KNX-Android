@@ -53,19 +53,29 @@ public class SavedNotesAdapter extends SimpleCursorAdapter {
 
 		textViewStart.setText(start);
 
-		String[] noteTypeText = new String[]{"Pavement issue", "Traffic signal",
-				"Enforcement", /*"Bike parking",*/ "Bike lane issue",
-				"Note this issue", /*"Bike parking",*/ /*"Bike shops",*/
-				/*"Public restrooms",*/ "Secret passage" /*"Water fountains,"*/
-				/*"Note this asset"*/};
+		//String[] noteTypeText = new String[]{"Pavement issue", "Traffic signal",
+		//		"Enforcement", "Bike lane issue", "Note this issue", "Secret passage",
+		//		"Crash / Near Miss"};
 
-		textViewType.setText(noteTypeText[cursor.getInt(cursor
-				.getColumnIndex("notetype"))]);
+        int type = cursor.getInt(cursor.getColumnIndex("notetype"));
+
+		//textViewType.setText(noteTypeText[cursor.getInt(cursor
+		//		.getColumnIndex("notetype"))]);
+
+        textViewType.setText(NoteData.NoteType.get(type).label);
 
 		int status = cursor.getInt(cursor.getColumnIndex("notestatus"));
 		Log.v("Jason", "Status: " + status);
 
 		if (status == 2) {
+
+
+			if(NoteData.NoteType.get(type).isIssue){
+				imageNoteType.setImageResource(R.drawable.noteissuepicker_high);
+			} else {
+				imageNoteType.setImageResource(R.drawable.noteassetpicker_high);
+			}/*
+
 			switch (cursor.getInt(cursor.getColumnIndex("notetype"))) {
 			case 0:
 				imageNoteType.setImageResource(R.drawable.noteissuepicker_high);
@@ -84,10 +94,10 @@ public class SavedNotesAdapter extends SimpleCursorAdapter {
 				break;
 			case 5:
 				imageNoteType.setImageResource(R.drawable.noteassetpicker_high);
-				break;/*
-			case 6:
-				imageNoteType.setImageResource(R.drawable.noteassetpicker_high);
 				break;
+			case 6:
+				imageNoteType.setImageResource(R.drawable.noteissuepicker_high);
+				break;/*
 			case 7:
 				imageNoteType.setImageResource(R.drawable.noteassetpicker_high);
 				break;
@@ -102,8 +112,8 @@ public class SavedNotesAdapter extends SimpleCursorAdapter {
 				break;
 			case 11:
 				imageNoteType.setImageResource(R.drawable.noteassetpicker_high);
-				break;*/
-			}
+				break;
+			}*/
 		} else if (status == 1) {
 			imageNoteType.setImageResource(R.drawable.failedupload_high);
 		}

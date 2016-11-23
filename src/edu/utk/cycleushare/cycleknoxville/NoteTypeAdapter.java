@@ -1,6 +1,7 @@
 package edu.utk.cycleushare.cycleknoxville;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,56 +21,54 @@ public class NoteTypeAdapter extends ArrayAdapter<String> {
 		this.values = values;
 	}
 
+	@NonNull
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = inflater.inflate(R.layout.note_type_list_item, parent,
-				false);
+		View rowView = inflater.inflate(R.layout.note_type_list_item, parent, false);
 		TextView textView = (TextView) rowView
 				.findViewById(R.id.TextViewNoteType);
 		ImageView imageView = (ImageView) rowView
 				.findViewById(R.id.ImageViewNoteType);
-		textView.setText(values[position]);
+        // textView.setText(values[position]);
 		// Change the icon for Windows and iPhone
 
-		switch (position) {
-		case 0:
+		int noteType = -1;
+
+		switch(position){
+			case 0: // pavement issue
+				noteType = NoteData.NoteType.pavementIssue.num; // 0;
+				break;
+			case 1: // traffic signal
+				noteType = NoteData.NoteType.trafficSignal.num; // 1;
+				break;
+			case 2: // enforcement
+				noteType = NoteData.NoteType.enforcement.num; // 2;
+				break;
+			case 3: // bike lane issue
+				noteType = NoteData.NoteType.bikeLaneIssue.num; // 4;
+				break;
+			case 4: // note this
+				noteType = NoteData.NoteType.noteThisIssue.num; // 5;
+				break;
+			case 5: // secret passage
+				noteType = NoteData.NoteType.secretPassage.num; // 9;
+				break;
+			case 6: // crash / near miss
+				noteType = NoteData.NoteType.crashNearMiss.num; // 12;
+				break;
+			/*default:
+				noteType = NoteData.NoteType.noteThisIssue.num;
+				break;*/
+		}
+
+        textView.setText(NoteData.NoteType.get(noteType).label);
+
+		if(NoteData.NoteType.get(noteType).isIssue){
 			imageView.setImageResource(R.drawable.noteissuepicker_high);
-			break;
-		case 1:
-			imageView.setImageResource(R.drawable.noteissuepicker_high);
-			break;
-		case 2:
-			imageView.setImageResource(R.drawable.noteissuepicker_high);
-			break;
-		case 3:
-			imageView.setImageResource(R.drawable.noteissuepicker_high);
-			break;
-		case 4:
-			imageView.setImageResource(R.drawable.noteissuepicker_high);
-			break;
-		case 5:
-			imageView.setImageResource(R.drawable.noteissuepicker_high);
-			break;
-		case 6:
+		} else {
 			imageView.setImageResource(R.drawable.noteassetpicker_high);
-			break;
-		case 7:
-			imageView.setImageResource(R.drawable.noteassetpicker_high);
-			break;
-		case 8:
-			imageView.setImageResource(R.drawable.noteassetpicker_high);
-			break;
-		case 9:
-			imageView.setImageResource(R.drawable.noteassetpicker_high);
-			break;
-		case 10:
-			imageView.setImageResource(R.drawable.noteassetpicker_high);
-			break;
-		case 11:
-			imageView.setImageResource(R.drawable.noteassetpicker_high);
-			break;
 		}
 		return rowView;
 	}

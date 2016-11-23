@@ -35,6 +35,61 @@ import android.database.Cursor;
 import android.location.Location;
 
 public class NoteData {
+
+	public enum NoteType {
+
+		pavementIssue(  0, "Pavement Issue", true),
+		trafficSignal(  1, "Traffic Signal"),
+		enforcement(    2,"Enforcement", true),
+		bikeParking(    3,"Bike Parking"),
+		bikeLaneIssue(  4, "Bike Lane Issue", true),
+		noteThisIssue(  5, "Note This Issue", true),
+		bikeParking2(   6, "Bike Parking"),
+		bikeShop(       7, "Bike Shop"),
+		publicRestroom( 8, "Public Restroom"),
+		secretPassage(  9, "Secret Passage"),
+		waterFountain(  10, "Water Fountain"),
+		noteThisAsset(  11, "Note This Asset"),
+		crashNearMiss(  12, "Crash / Near miss / Harassment", true);
+
+		public final int num;
+		public final String label;
+		public final boolean isIssue;
+
+		NoteType(int num, String label){
+			this.num = num;
+			this.label = label;
+			this.isIssue = false;
+		}
+
+		NoteType(int num, String label, boolean isIssue){
+			this.num = num;
+			this.label = label;
+			this.isIssue = isIssue;
+		}
+
+		static NoteType get(int num){
+			switch(num){
+				case 0: return pavementIssue;
+				case 1: return trafficSignal;
+				case 2: return enforcement;
+				case 3: return bikeParking;
+				case 4: return bikeLaneIssue;
+				case 5: return noteThisIssue;
+				case 6: return bikeParking;
+				case 7: return bikeShop;
+				case 8: return publicRestroom;
+				case 9: return secretPassage;
+				case 10: return waterFountain;
+				case 11: return noteThisAsset;
+				case 12: return crashNearMiss;
+				default: return null;
+			}
+		}
+
+	}
+
+
 	long noteid;
 	double startTime = 0;
 	Location noteLocation = new Location("");

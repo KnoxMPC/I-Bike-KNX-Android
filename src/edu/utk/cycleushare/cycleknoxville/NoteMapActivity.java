@@ -19,13 +19,15 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.utk.cycleushare.cycleknoxville.R;
 
-public class NoteMapActivity extends Activity {
+public class NoteMapActivity extends Activity implements OnMapReadyCallback {
 	GoogleMap map;
 
 	private MenuItem saveMenuItem;
@@ -35,6 +37,7 @@ public class NoteMapActivity extends Activity {
 	Bitmap photo;
 
 	private Menu menu;
+	private NoteData note;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,24 +52,22 @@ public class NoteMapActivity extends Activity {
 
 		try {
 			// Set zoom controls
-			map = ((MapFragment) getFragmentManager().findFragmentById(
-					R.id.noteMap)).getMap();
+			/*map = */((MapFragment) getFragmentManager().findFragmentById(
+					R.id.noteMap)).getMapAsync(this);
 
 			Bundle cmds = getIntent().getExtras();
 			long noteid = cmds.getLong("shownote");
 
-			edu.utk.cycleushare.cycleknoxville.NoteData note = edu.utk.cycleushare.cycleknoxville.NoteData.fetchNote(this, noteid);
+			note = edu.utk.cycleushare.cycleknoxville.NoteData.fetchNote(this, noteid);
 
 			// Show note details
 			TextView t1 = (TextView) findViewById(R.id.TextViewMapNoteType);
 			TextView t2 = (TextView) findViewById(R.id.TextViewMapNoteDetails);
 			TextView t3 = (TextView) findViewById(R.id.TextViewMapNoteFancyStart);
 
-			String[] noteTypeText = new String[]{"Pavement issue", "Traffic signal",
-					"Enforcement", /*"Bike parking",*/ "Bike lane issue",
-					"Note this issue", /*"Bike parking",*/ /*"Bike shops",*/
-				/*"Public restrooms",*/ "Secret passage" /*,"Water fountains,"*/
-				/*"Note this asset"*/};
+			//String[] noteTypeText = new String[]{"Pavement issue", "Traffic signal",
+			//		"Enforcement", "Bike lane issue", "Note this issue", "Secret passage",
+			//		"Crash / Near Miss"};
 
 					/*new String[] { "Pavement issue",
 					"Traffic signal", "Enforcement", "Bike parking",
@@ -74,55 +75,11 @@ public class NoteMapActivity extends Activity {
 					"Bike shops", "Public restrooms", "Secret passage",
 					"Water fountains", "Note this asset" };
 					*/
-			t1.setText(noteTypeText[note.notetype]);
+			t1.setText(NoteData.NoteType.get(note.notetype).label);//noteTypeText[note.notetype]);
 			t2.setText(note.notedetails);
 			t3.setText(note.notefancystart);
 
 			// Center & zoom the map
-			LatLng center = new LatLng(note.latitude * 1E-6,
-					note.longitude * 1E-6);
-
-			map.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 16));
-
-			if (note != null) {
-				if (note.notetype >= 0 && note.notetype <= 5) {
-					map.addMarker(new MarkerOptions()
-							.icon(BitmapDescriptorFactory
-									.fromResource(R.drawable.noteissuemapglyph_high))
-							.anchor(0.0f, 1.0f) // Anchors the marker on the
-												// bottom left
-							.position(
-									new LatLng(note.latitude * 1E-6,
-											note.longitude * 1E-6)));
-				} else if (note.notetype >= 6 && note.notetype <= 11) {
-					map.addMarker(new MarkerOptions()
-							.icon(BitmapDescriptorFactory
-									.fromResource(R.drawable.noteassetmapglyph_high))
-							.anchor(0.0f, 1.0f) // Anchors the marker on the
-												// bottom left
-							.position(
-									new LatLng(note.latitude * 1E-6,
-											note.longitude * 1E-6)));
-				}
-			}
-
-			Log.v("Jason", "Image Photo: " + note.noteimagedata);
-			Log.v("Jason", "Image Photo: " + note.noteimageurl);
-
-			if (note.noteimageurl.equals("")) {
-			} else {
-				// Store photo error, retrieve error
-				photo = BitmapFactory.decodeFile(NoteDetailActivity.imgDir() + "/" + note.noteimageurl + ".jpg");
-
-				if (photo.getHeight() > photo.getWidth()) {
-					imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-				} else {
-					imageView.setScaleType(ImageView.ScaleType.FIT_START);
-				}
-				imageView.setImageBitmap(photo);
-				Log.v("Jason", "Image Photo: " + photo);
-			}
-
 		} catch (Exception e) {
 			Log.e("GOT!", e.toString());
 		}
@@ -179,4 +136,66 @@ public class NoteMapActivity extends Activity {
 		}
 	}
 
+	@Override
+	public void onMapReady(GoogleMap googleMap) {
+		map = googleMap;
+
+		LatLng center = new LatLng(note.latitude * 1E-6,
+				note.longitude * 1E-6);
+
+		map.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 16));
+
+		if (note != null) {
+
+			int id = 0;
+
+			if(NoteData.NoteType.get(note.notetype).isIssue){
+				id = R.drawable.noteissuemapglyph_high;
+			} else {
+				id = R.drawable.noteassetmapglyph_high;
+			}
+
+			    map.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromResource(id))
+                    .anchor(0.0f, 1.0f)
+                    .position(new LatLng(note.latitude * 1E-6, note.longitude * 1E-6)));
+
+/*			if (note.notetype >= 0 && note.notetype <= 5) {
+				map.addMarker(new MarkerOptions()
+						.icon(BitmapDescriptorFactory
+								.fromResource(R.drawable.noteissuemapglyph_high))
+						.anchor(0.0f, 1.0f) // Anchors the marker on the
+						// bottom left
+						.position(
+								new LatLng(note.latitude * 1E-6,
+										note.longitude * 1E-6)));
+			} else if (note.notetype >= 6 && note.notetype <= 11) {
+				map.addMarker(new MarkerOptions()
+						.icon(BitmapDescriptorFactory
+								.fromResource(R.drawable.noteassetmapglyph_high))
+						.anchor(0.0f, 1.0f) // Anchors the marker on the
+						// bottom left
+						.position(
+								new LatLng(note.latitude * 1E-6,
+										note.longitude * 1E-6)));
+			}
+*/		}
+
+		Log.v("Jason", "Image Photo: " + note.noteimagedata);
+		Log.v("Jason", "Image Photo: " + note.noteimageurl);
+
+		if (note.noteimageurl.equals("")) {
+		} else {
+			// Store photo error, retrieve error
+			photo = BitmapFactory.decodeFile(NoteDetailActivity.imgDir() + "/" + note.noteimageurl + ".jpg");
+
+			if (photo.getHeight() > photo.getWidth()) {
+				imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+			} else {
+				imageView.setScaleType(ImageView.ScaleType.FIT_START);
+			}
+			imageView.setImageBitmap(photo);
+			Log.v("Jason", "Image Photo: " + photo);
+		}
+	}
 }
